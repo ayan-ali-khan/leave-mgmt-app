@@ -41,10 +41,16 @@ export const login = async (req, res)=>{
         const {email, password} = req.body;
         const userData = await Employee.findOne({email})
 
+        if (!userData) {
+            console.log("Invalid Credentials");
+            
+            return res.json({ success: false, message: "Invalid Credentials" });
+        }
+
         const isPasswordCorrect = await bcrypt.compare(password, userData.password);
 
         if(!isPasswordCorrect){
-            return res.json({success: false, message: "Invalid Credentials"});
+            return res.json({success: false, message: "Invalid Password"});
         }
 
         const token = generateToken(userData._id);
@@ -52,13 +58,30 @@ export const login = async (req, res)=>{
         res.json({success: true, userData, token, message: "Login successfully"});
     } catch (error) {
         console.log(error.message);
-        res.json({success: true, message: error.message});
+        res.json({success: false, message: error.message});
     }
 }
 
 //controller to check if user is authenticated
 export const checkAuth = (req, res)=>{
     res.json({success: true, user: req.user});
+}
+
+export const getLeaves = async (req, res) => {
+    try {
+        let query = {};
+
+        if (req.user.role === "employee") {
+            query.employeeId = req.user._id;
+        }
+
+        const leaves = await LeaveRequest.find(query).populate("employeeId")
+
+        res.json({success: true, leaves});
+    } catch (error) {
+        console.log(error.message);
+        res.json({success: false, message: error.message});
+    }
 }
 
 //controller to apply Leave
@@ -73,9 +96,14 @@ export const applyLeave = async (req, res) => {
         if(startDate > endDate || noOfDays<1){
             return res.json({success: false, message: "Invalid Dates"});
         }
-        else{
-            const leave = await LeaveRequest.create({startDate, endDate, reason, noOfDays}, {new: true});
-        }
+
+        const leave = await LeaveRequest.create({
+            employeeId: userId,
+            startDate, 
+            endDate, 
+            numberOfDays: noOfDays,
+            reason,
+        });
 
         res.json({success: true, leave, message: "Leave applied successfully"})
     } catch (error) {

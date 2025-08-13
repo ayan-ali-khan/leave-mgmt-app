@@ -18,7 +18,10 @@ const server = http.createServer(app);
 app.use(express.json({limit: "4mb"}));
 
 //for local
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // your frontend origin
+    credentials: true               // allow cookies / auth headers
+}));
 
 
 //route setup

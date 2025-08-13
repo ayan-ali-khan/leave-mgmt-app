@@ -1,5 +1,5 @@
 import express from "express";
-import { checkAuth, login, signup, applyLeave, checkStatus } from "../controllers/userController.js";
+import { checkAuth, login, signup, applyLeave, checkStatus, getLeaves } from "../controllers/userController.js";
 import { protectRoute } from "../middleware/auth.js";
 
 const employeeRouter = express.Router();
@@ -7,6 +7,7 @@ const employeeRouter = express.Router();
 employeeRouter.post("/signup", signup);
 employeeRouter.post("/login", login);
 employeeRouter.get("/check", protectRoute, checkAuth);
+employeeRouter.get("/leaves",protectRoute, getLeaves);
 employeeRouter.post("/apply-leave", protectRoute, applyLeave);
 employeeRouter.get("/check-status", protectRoute, checkStatus);
 

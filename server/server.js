@@ -13,6 +13,9 @@ const app = express();
 //Middleware
 app.use(express.json());
 
+//connect to DB
+await connectDB();
+
 //for local
 app.use(cors());
 
@@ -24,20 +27,11 @@ app.use("/api/status", (req, res)=> res.send("server is live"));
 app.use("/api/employee", employeeRouter);
 app.use("/api/admin", adminRouter);
 
-//connect to DB
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (err) {
-    return res.status(500).json({ message: "Database connection failed" });
-  }
-});
 
-if(process.env.NODE_ENV !== "production"){
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, ()=> console.log("Server is running on port: " + PORT));
-}
+// if(process.env.NODE_ENV !== "production"){
+//     const PORT = process.env.PORT || 5000;
+//     app.listen(PORT, ()=> console.log("Server is running on port: " + PORT));
+// }
 
 //export server for vercel
 export default app;

@@ -1,7 +1,8 @@
 # 📄 Leave Management System
 
 A comprehensive **Leave Management Application** for employees and admins. Employees can manage their leave requests and profiles, while admins have tools to handle leave approvals and employee management.
-
+---
+### *Deployed URL:* [Leave Management App](https://leave-mgmt-app-gilt.vercel.app/)
 ---
 
 ## 1. 📌 Project Overview

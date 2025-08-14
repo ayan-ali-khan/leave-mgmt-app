@@ -206,15 +206,15 @@ Employee <br>
 ├── email (unique)
 ├── department <br>
 ├── leaveBalance <br>
-├── leaves [LeaveRequest]
+├── leaves [LeaveRequest] <br>
 
-LeaveRequest
-├── id
-├── employeeId
-├── startDate
-├── endDate
-├── reason
-├── status (pending/approved/rejected)
+LeaveRequest <br>
+├── id <br>
+├── employeeId <br>
+├── startDate <br>
+├── endDate <br>
+├── reason <br>
+├── status (pending/approved/rejected) <br>
 
 ---
 

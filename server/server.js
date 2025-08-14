@@ -16,6 +16,8 @@ app.use(express.json());
 //for local
 app.use(cors());
 
+app.get('/', (req, res) => res.send("Server is live"))
+
 
 //route setup
 app.use("/api/status", (req, res)=> res.send("server is live"));
@@ -23,7 +25,14 @@ app.use("/api/employee", employeeRouter);
 app.use("/api/admin", adminRouter);
 
 //connect to DB
-await connectDB();
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    return res.status(500).json({ message: "Database connection failed" });
+  }
+});
 
 if(process.env.NODE_ENV !== "production"){
     const PORT = process.env.PORT || 5000;

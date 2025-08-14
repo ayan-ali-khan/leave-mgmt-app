@@ -14,7 +14,10 @@ const app = express();
 app.use(express.json());
 
 //for local
-app.use(cors());
+app.use(cors({
+  origin: "https://leave-mgmt-app-gilt.vercel.app", // your frontend domain
+  credentials: true,
+}));
 
 //connect to DB
 app.use(async (req, res, next) => {

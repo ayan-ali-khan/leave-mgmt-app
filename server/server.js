@@ -13,11 +13,11 @@ const app = express();
 //Middleware
 app.use(express.json());
 
-//connect to DB
-await connectDB();
-
 //for local
 app.use(cors());
+
+//connect to DB
+await connectDB();
 
 app.get('/', (req, res) => res.send("Server is live"))
 
@@ -28,10 +28,10 @@ app.use("/api/employee", employeeRouter);
 app.use("/api/admin", adminRouter);
 
 
-// if(process.env.NODE_ENV !== "production"){
-//     const PORT = process.env.PORT || 5000;
-//     app.listen(PORT, ()=> console.log("Server is running on port: " + PORT));
-// }
+if(process.env.NODE_ENV !== "production"){
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, ()=> console.log("Server is running on port: " + PORT));
+}
 
 //export server for vercel
 export default app;

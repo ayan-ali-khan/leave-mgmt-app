@@ -17,7 +17,7 @@ export default function Sidebar() {
   return (
     <aside className="h-screen w-64 shrink-0 border-r bg-white p-4">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold">LeaveMgmt</h2>
+        <h2 className="text-xl font-semibold">Leave Management App</h2>
         <p className="text-xs text-gray-500">{user?.email}</p>
       </div>
       <nav className="space-y-2">

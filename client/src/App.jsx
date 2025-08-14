@@ -31,8 +31,8 @@ export default function App() {
       <Route path="/employee/profile" element={user ? <RequireAuth role="employee"><Profile /></RequireAuth>: <Navigate to="/login"/>} />
       <Route  path="/employee/leaves" element={user ? <RequireAuth role="employee"><Leaves /></RequireAuth>: <Navigate to="/login"/>} />
 
-      <Route path="/admin/leave-requests" element={user ? <RequireAuth role="admin"><LeaveRequests /></RequireAuth>: <Navigate to="/"/>} />
-      <Route path="/admin/employees" element={user ? <RequireAuth role="admin"><Employees /></RequireAuth>: <Navigate to="/"/>} />
+      <Route path="/admin/leave-requests" element={user ? <RequireAuth role="admin"><LeaveRequests /></RequireAuth>: <Navigate to="/login?role=admin"/>} />
+      <Route path="/admin/employees" element={user ? <RequireAuth role="admin"><Employees /></RequireAuth>: <Navigate to="/login?role=admin"/>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

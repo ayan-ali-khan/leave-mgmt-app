@@ -12,10 +12,10 @@ export default function Profile() {
   useEffect(() => {
     let mounted = true
     setLoading(true)
-    api.get('/api/me')
+    api.get('/api/employee/me')
       .then(res => {
         if (!mounted) return
-        setProfile(res.data)
+        setProfile(res.data.employee)
         // merge leave balance if provided by backend
         if (user && res.data?.leaveBalance !== undefined) {
           const merged = { ...user, leaveBalance: res.data.leaveBalance }
@@ -36,7 +36,7 @@ export default function Profile() {
         <div className="grid max-w-3xl grid-cols-1 gap-4 md:grid-cols-2">
           <div className="rounded-2xl bg-white p-4 shadow">
             <h2 className="mb-2 font-semibold">Basic Info</h2>
-            <p><span className="text-gray-500">Name:</span> {profile.fullName || profile.name}</p>
+            <p><span className="text-gray-500">Name:</span> {profile.fullName}</p>
             <p><span className="text-gray-500">Email:</span> {profile.email}</p>
             <p><span className="text-gray-500">Department:</span> {profile.department || '—'}</p>
             <p><span className="text-gray-500">Joined:</span> {profile.joinDate ? new Date(profile.joinDate).toDateString() : '—'}</p>
@@ -44,8 +44,8 @@ export default function Profile() {
           <div className="rounded-2xl bg-white p-4 shadow">
             <h2 className="mb-2 font-semibold">Leave</h2>
             <p><span className="text-gray-500">Total Balance:</span> {profile.totalLeaveBalance ?? profile.leaveBalance ?? '—'}</p>
-            <p><span className="text-gray-500">Used:</span> {profile.usedLeave ?? '—'}</p>
-            <p><span className="text-gray-500">Remaining:</span> {profile.remainingLeave ?? (profile.totalLeaveBalance !== undefined && profile.usedLeave !== undefined ? profile.totalLeaveBalance - profile.usedLeave : '—')}</p>
+            <p><span className="text-gray-500">Used:</span> {profile.leaveTaken ?? '—'}</p>
+            <p><span className="text-gray-500">Remaining:</span> {profile.remainingLeave ?? (profile.totalLeaveBalance !== undefined && profile.leaveTaken !== undefined ? profile.totalLeaveBalance - profile.leaveTaken : '—')}</p>
           </div>
         </div>
       )}

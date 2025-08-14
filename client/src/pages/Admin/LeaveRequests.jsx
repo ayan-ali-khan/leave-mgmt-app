@@ -10,15 +10,18 @@ export default function LeaveRequests() {
   useEffect(() => {
     setLoading(true)
     api.get('/api/admin/leaves')
-      .then(res => setRows(res.data || []))
+      .then(res => setRows(res.data.leaves || []))
       .catch(e => setErr(e?.response?.data?.message || 'Failed to load requests'))
       .finally(()=> setLoading(false))
   }, [])
 
   const updateStatus = async (id, status) => {
     try {
-      const res = await api.patch(`/api/admin/leaves/${id}`, { status })
-      setRows(prev => prev.map(r => (r._id === id ? res.data : r)))
+      const res = await api.put(`/api/admin/leave/${id}`, { status })
+      api.get('/api/admin/leaves')
+      .then(res => setRows(res.data.leaves || []))
+      
+      console.log(res.data.leaves)
     } catch (e) {
       setErr(e?.response?.data?.message || 'Failed to update status')
     }
@@ -34,7 +37,6 @@ export default function LeaveRequests() {
             <thead className="bg-gray-100 text-left">
               <tr>
                 <th className="p-3">Employee</th>
-                <th className="p-3">Email</th>
                 <th className="p-3">Start</th>
                 <th className="p-3">End</th>
                 <th className="p-3">Reason</th>
@@ -45,8 +47,7 @@ export default function LeaveRequests() {
             <tbody>
               {rows.map((r, i) => (
                 <tr key={r._id || i} className="border-t">
-                  <td className="p-3">{r.employeeName || r.employee?.fullName || '—'}</td>
-                  <td className="p-3">{r.employeeEmail || r.employee?.email || '—'}</td>
+                  <td className="p-3">{r.employeeId.employeeName || r.employeeId?.fullName || '—'}</td>
                   <td className="p-3">{new Date(r.startDate).toDateString()}</td>
                   <td className="p-3">{new Date(r.endDate).toDateString()}</td>
                   <td className="p-3">{r.reason}</td>

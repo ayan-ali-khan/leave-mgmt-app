@@ -32,11 +32,12 @@ export default function Leaves() {
     setLoading(true)
     Promise.all([
       api.get('/api/employee/leaves'),
-      api.get('/api/employee/check-status')
+      api.get('/api/employee/check-balance')
     ]).then(([leavesRes, meRes]) => {
       if (!mounted) return
       setRows(leavesRes.data.leaves)
-      const remaining = meRes.data?.remainingLeave ?? meRes.data?.leaveBalance ?? null
+
+      const remaining = meRes?.data?.remaining ?? 0; 
       setStats({ remaining })
     }).catch(e => setErr(e?.response?.data?.message || 'Failed to load'))
       .finally(()=> setLoading(false))
@@ -53,7 +54,7 @@ export default function Leaves() {
     const payload = { startDate: form.startDate, endDate: form.endDate, reason: form.reason }
     const res = await api.post('/api/employee/apply-leave', payload)
     
-    console.log(res.data)
+    // console.log(res.data)
     
     if (res.data.error) return setErr(res.data.error)
     if (res.data.message) setErr(res.data.message)

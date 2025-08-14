@@ -112,16 +112,33 @@ export const applyLeave = async (req, res) => {
     }
 }
 
-export const checkStatus = async (req, res) => {
+export const checkBalance = async (req, res) => {
     try {
         const userId = req.user._id;
-        const status = await LeaveRequest.find({employeeId: userId}).status;
-
-        if(!status){
-            return res.json({success: false, message: "No leave requests found"});
+        const employee = await Employee.findById(userId);
+        // console.log(employee.totalLeaveBalance);
+        const remaining = employee.totalLeaveBalance;
+        if(!remaining){
+            return res.json({success: false, message: "No leave balance found"});
         }
 
-        res.json({success: true, status});
+        res.json({success: true, remaining});
+    } catch (error) {
+        console.log(error.message);
+        res.json({success: false, message: error.message})
+    }
+}
+
+export const user = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const employee = await Employee.findById(userId);
+
+        if(!employee){
+            return res.json({success: false, message: "No employee found"});
+        }
+
+        res.json({success: true, employee});
     } catch (error) {
         console.log(error.message);
         res.json({success: false, message: error.message})

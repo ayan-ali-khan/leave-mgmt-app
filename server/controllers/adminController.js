@@ -62,7 +62,7 @@ export const checkAuth = (req, res)=>{
 //get all users except logged in user
 export const getLeaves = async (req, res) => {
     try {
-        const leaves = await LeaveRequest.find().populate("employeeId")
+        const leaves = await LeaveRequest.find().populate("employeeId", "fullName email")
 
         res.json({success: true, leaves});
     } catch (error) {
@@ -81,15 +81,24 @@ export const leave = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invalid status value" });
         }
 
-        const updatedLeave = await LeaveRequest.findByIdAndUpdate(id, {status});
+        const updatedLeave = await LeaveRequest.findByIdAndUpdate(id, {status}, {new: true});
 
         if (!updatedLeave) {
             return res.status(404).json({ success: false, message: "Leave request not found" });
         }
 
-        if (["approved"].includes(status)) {
-            await Employee.findByIdAndUpdate(id, {status: "approved"});
+        if (status === "approved") {
+            const employee = await Employee.findById(updatedLeave.employeeId); // assuming LeaveRequest has employeeId ref
 
+            if (!employee) {
+                return res.status(404).json({ success: false, message: "Employee not found" });
+            }
+
+            const newBalance = employee.totalLeaveBalance - updatedLeave.leaveDays;
+
+            employee.totalLeaveBalance = newBalance >= 0 ? newBalance : 0; // prevent negative balance
+            employee.leaveTaken = (employee.leaveTaken || 0) + updatedLeave.leaveDays; 
+            await employee.save();
         }
 
         res.json({ success: true, data: updatedLeave });
@@ -100,17 +109,45 @@ export const leave = async (req, res) => {
     }
 }
 
-//send message to selected user
-export const leaveBalance = async (req, res) => {
+
+export const getEmployees = async (req, res) => {
     try {
-        const {id} = req.params;
 
-        const leaves = await Employee.findById(id).select("totalLeaveBalance");
+        const employees = await Employee.find();
 
-        res.json({success: true, leaves});
+        res.json({success: true, employees});
 
     } catch (error) {
         console.log(error.message);
         res.json({success: false, message: error.message});
+    }
+}
+
+export const addEmployee = async (req, res) => {
+    const {fullName, email, department, joinDate} = req.body;
+
+    try {
+        if(!fullName || !email || !department || !joinDate){
+            return res.json({success: false, message: "Missing Details"});
+        }
+        const parsedJoinDate = joinDate ? new Date(joinDate) : new Date();
+
+        const user = await Employee.findOne({email});
+
+        if(user){
+            return res.json({success: false, message: "Employee already exists"})
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash("test@123", salt);
+
+        const newUser = await Employee.create({
+            fullName, email, password: hashedPassword, department, joinDate: parsedJoinDate
+        });
+
+        res.json({success: true, userData: newUser, message: "Account created successfully"})
+    } catch (error) {
+        console.log(error.message);
+        res.json({success: false, message: error.message})
     }
 }

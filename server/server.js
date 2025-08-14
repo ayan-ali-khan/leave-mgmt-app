@@ -10,18 +10,12 @@ import adminRouter from "./routes/admin.js";
 //Express APP and HTTP Server
 
 const app = express();
-const server = http.createServer(app);
-
-//initialize socket.io server
 
 //Middleware
-app.use(express.json({limit: "4mb"}));
+app.use(express.json());
 
 //for local
-app.use(cors({
-    origin: 'http://localhost:5173', // your frontend origin
-    credentials: true               // allow cookies / auth headers
-}));
+app.use(cors());
 
 
 //route setup
@@ -38,4 +32,4 @@ if(process.env.NODE_ENV !== "production"){
 }
 
 //export server for vercel
-export default server;
+export default app;
